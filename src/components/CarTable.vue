@@ -1,5 +1,5 @@
 <template>
-  <DataTable :value="cars">
+  <DataTable :value="cars" :style="`background: green`">
     <Column v-for="column in carColumns" :key="column.field" :field="column.field" :header="column.header">
       <template #body="{ data }">
         <template v-if="column.field === 'criticScore'">
