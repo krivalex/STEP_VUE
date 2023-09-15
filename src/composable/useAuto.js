@@ -68,6 +68,23 @@ export const useAuto = () => {
     }
   }
 
+  async function uploadImage(event) {
+    loading.value.newAuto = true
+    try {
+      const storage = getStorage()
+      const storageRef = ref(storage, `images/${newAuto.value.id}`)
+      await uploadBytes(storageRef, newAuto.value.image).then(async () => {
+        await getDownloadURL(storageRef).then((url) => {
+          newAuto.value.image = url
+        })
+      })
+    } catch (e) {
+      console.error('Error: ', e)
+    } finally {
+      loading.value.newAuto = false
+    }
+  }
+
   function clear() {
     newAuto.value = {
       id: '',
@@ -91,6 +108,7 @@ export const useAuto = () => {
     createAuto,
     getAutoList,
     clear,
+    uploadImage,
     auto,
     newAuto,
     autoListRemake,

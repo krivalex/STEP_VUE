@@ -43,6 +43,10 @@
           <label for="travel">Пробег</label>
           <Slider v-model="newAuto.travel" :min="0" :max="500000" :step="1000" />
         </div>
+        <div class="p-field">
+          <label for="photo">Картинки</label>
+          <FileUpload id="photo" v-model="newAuto.image" mode="basic" accept="image/*" @select="onUpload" />
+        </div>
       </div>
     </template>
     <template #footer>
@@ -62,9 +66,10 @@ import Calendar from 'primevue/calendar'
 import ColorPicker from 'primevue/colorpicker'
 import RadioButton from 'primevue/radiobutton'
 import Slider from 'primevue/slider'
+import FileUpload from 'primevue/fileupload'
 import { useAuto } from '@/composable/useAuto'
 
-const { newAuto, createAuto, loading, clear } = useAuto()
+const { newAuto, createAuto, loading, clear, uploadImage } = useAuto()
 
 const visible = ref(false)
 const toggleVisible = () => {
@@ -74,6 +79,11 @@ const toggleVisible = () => {
 async function addAuto() {
   await createAuto()
   toggleVisible()
+}
+
+async function onUpload(event) {
+  console.log(event)
+  await uploadImage(event)
 }
 
 function clearAuto() {
