@@ -1,7 +1,5 @@
 <template>
-  <Button icon="pi pi-plus" @click="toggleVisible" />
-
-  <Dialog v-model:visible="visible" modal header="Выставить автомобиль" :style="`width: '50vw'`">
+  <Dialog v-model:visible="visibleAddCar" modal header="Выставить автомобиль" :style="`width: '50vw'`" @click.stop="toggleAddCar">
     <template #default>
       <div class="p-fluid">
         <div class="p-field">
@@ -10,7 +8,7 @@
         </div>
         <div class="p-field">
           <label for="price">Цена</label>
-          <InputNumber id="price" v-model="newAuto.price" mode="currency" currency="KZT" locale="ru-ru" />
+          <InputNumber id="price" v-model="newAuto.price" inputId="currency-us" mode="currency" currency="KZT" locale="ru-ru" />
         </div>
         <div class="p-field">
           <label for="year">Год</label>
@@ -18,7 +16,7 @@
         </div>
         <div class="p-field">
           <label for="volume">Объем</label>
-          <InputNumber id="volume" v-model="newAuto.volume" />
+          <InputNumber id="volume" v-model="newAuto.volume" :minFractionDigits="1" :maxFractionDigits="1" />
         </div>
         <div class="p-field">
           <label for="color">Цвет</label>
@@ -26,26 +24,31 @@
         </div>
         <div class="p-field">
           <label for="city">Город</label>
-          <Dropdown id="city" v-model="newAuto.city" editable :options="cityLabel" option-label="city" option-value="city" placeholder="Город" />
+          <Dropdown id="city" v-model="newAuto.city" editable :options="carCity" option-label="city" option-value="city" placeholder="Город" />
         </div>
         <div class="p-field">
           <label for="carcase">Кузов</label>
-          <Dropdown id="carcase" v-model="newAuto.carcase" editable :options="carcaseLabel" option-label="carcase" option-value="carcase" placeholder="Кузов" />
+          <Dropdown id="carcase" v-model="newAuto.carcase" editable :options="carCase" option-label="carcase" option-value="carcase" placeholder="Кузов" />
         </div>
         <div class="p-field">
           <label for="gear">Коробка</label>
-          <div id="gear" v-for="(gear, index) in gearLabel">
-            <label :for="index">{{ gear }}</label>
-            <RadioButton :key="gear" v-model="newAuto.gear" :value="gear" :inputId="gear" :name="gear" :id="index" />
+          <div class="flex flex-wrap gap-3">
+            <RadioButton id="mechanic" v-model="newAuto.gear" name="gear" value="Механика" />
+            <label for="mechanic" class="ml-2">Механика</label>
+          </div>
+          <div class="flex align-items-center">
+            <RadioButton id="auto" v-model="newAuto.gear" name="gear" value="Автомат" />
+            <label for="auto" class="ml-2">Автомат</label>
           </div>
         </div>
         <div class="p-field">
           <label for="travel">Пробег</label>
-          <Slider v-model="newAuto.travel" :min="0" :max="500000" :step="1000" />
+          <InputText id="travel" v-model.number="newAuto.travel" />
+          <Slider v-model="newAuto.travel" min="0" max="500000" />
         </div>
         <div class="p-field">
-          <label for="photo">Картинки</label>
-          <FileUpload id="photo" v-model="newAuto.image" mode="basic" accept="image/*" @select="onUpload" />
+          <label for="travel">Картинка</label>
+          <FileUpload mode="basic" name="demo[]" url="./upload.php" accept="image/*" :maxFileSize="1000000" @input="onUpload($event)" />
         </div>
       </div>
     </template>
@@ -57,9 +60,10 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
 import Dialog from 'primevue/dialog'
 import Button from 'primevue/button'
+import { ref, onMounted } from 'vue'
+import InputText from 'primevue/inputtext'
 import Dropdown from 'primevue/dropdown'
 import InputNumber from 'primevue/inputnumber'
 import Calendar from 'primevue/calendar'
@@ -68,22 +72,14 @@ import RadioButton from 'primevue/radiobutton'
 import Slider from 'primevue/slider'
 import FileUpload from 'primevue/fileupload'
 import { useAuto } from '@/composable/useAuto'
+import { useModals } from '@/composable/useModals'
 
 const { newAuto, createAuto, loading, clear, uploadImage } = useAuto()
-
-const visible = ref(false)
-const toggleVisible = () => {
-  visible.value = !visible.value
-}
+const { visibleAddCar, toggleAddCar } = useModals()
 
 async function addAuto() {
   await createAuto()
   toggleVisible()
-}
-
-async function onUpload(event) {
-  console.log(event)
-  await uploadImage(event)
 }
 
 function clearAuto() {
@@ -91,7 +87,10 @@ function clearAuto() {
   toggleVisible()
 }
 
-const gearLabel = ['Механика', 'Автомат', 'Робот', 'Вариатор']
+async function onUpload(e) {
+  const image = e.target.files[0]
+  await uploadImage(image)
+}
 
 const brandLabel = [
   { brand: 'BMW' },
@@ -113,41 +112,20 @@ const brandLabel = [
   { brand: 'Peugeot' },
 ]
 
-const cityLabel = [
-  { city: 'Алматы' },
-  { city: 'Нур-Султан' },
-  { city: 'Шымкент' },
-  { city: 'Актобе' },
-  { city: 'Атырау' },
-  { city: 'Караганда' },
-  { city: 'Кокшетау' },
-  { city: 'Костанай' },
-  { city: 'Кызылорда' },
-  { city: 'Павлодар' },
-  { city: 'Петропавловск' },
-  { city: 'Семей' },
-  { city: 'Талдыкорган' },
-  { city: 'Тараз' },
-  { city: 'Туркестан' },
-  { city: 'Уральск' },
-  { city: 'Усть-Каменогорск' },
-  { city: 'Шымкент' },
-  { city: 'Экибастуз' },
-  { city: 'Другой' },
-]
+const carCity = [{ city: 'Алматы' }, { city: 'Астана' }, { city: 'Актобе' }, { city: 'Актау' }, { city: 'Усть-Каменогорск' }]
 
-const carcaseLabel = [
-  { carcase: 'Седан' },
-  { carcase: 'Хэтчбек' },
-  { carcase: 'Универсал' },
-  { carcase: 'Купе' },
-  { carcase: 'Кабриолет' },
-  { carcase: 'Лифтбек' },
-  { carcase: 'Лимузин' },
-  { carcase: 'Минивэн' },
-  { carcase: 'Пикап' },
-  { carcase: 'Родстер' },
-  { carcase: 'Фастбек' },
-  { carcase: 'Другой' },
-]
+const carCase = [{ carcase: 'седан' }, { carcase: 'кабриолет' }, { carcase: 'джип' }, { carcase: 'универсал' }, { carcase: 'внедорожник' }, { carcase: 'пикап' }, { carcase: 'хэтчбек' }]
 </script>
+
+<style scoped>
+.custom-button {
+  color: black;
+  width: 170px;
+  margin-bottom: 10px;
+  margin-top: 10px;
+  padding: 10px 15px;
+  background: none;
+  color: rgb(83, 111, 111);
+  border: 1px solid rgb(83, 111, 111);
+}
+</style>
