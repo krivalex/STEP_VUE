@@ -10,12 +10,9 @@
 <b>FIREBASE</b> - using - completed
 <b>MODAL WINDOW TO ADD CAR TO PRICE</b> - completed
 <b>FILE SYSTEM</b> - USING - completed
-
-CARidPAGE
-VUE-ROUTER - REVIEW
-VUE-ROUTER - USE
-SERVICE TABS
-
-EXAM COMPONIMATION
-FIREBASE + PRIMEVUE
-NETLIFY - deploy
+<b>CARidPAGE</b> - completed
+<b>VUE-ROUTER - REVIEW</b> - completed
+<b>VUE-ROUTER - USE</b> - completed
+<b>SERVICE TABS</b> - completed
+<b>EXAM COMPONIMATION</b> - completed
+<b>NETLIFY - deploy</b> - completed
