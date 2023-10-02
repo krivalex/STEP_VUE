@@ -109,6 +109,7 @@ const brandLabel = [
   { brand: 'Chevrolet' },
   { brand: 'Skoda' },
   { brand: 'Renault' },
+  { brand: 'Hugo' },
   { brand: 'Peugeot' },
 ]
 
